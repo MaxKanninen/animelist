@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>All series</title>
+</head>
+
+<body>
+  <h2>All anime series</h2>
+  <hr />
+  {% for series in series_list %}
+  <p>
+    <a href="/series/{{ series.id }}">{{ series.title }}</a>
+    <br />
+    {{ series.year }}
+  </p>
+  <hr />
+  {% endfor %}
+</body>
+
+</html>

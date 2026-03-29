@@ -94,3 +94,20 @@ def add_series():
     sql = "INSERT INTO series (title, description, year, episodes, user_id, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))"
     db.execute(sql, [title, description, year, episodes, session["user_id"]])
     return "Anime series added"
+
+@app.route("/series")
+def series_list():
+    sql = """SELECT id, title, year
+             FROM series 
+             ORDER BY created_at DESC"""
+    series_list = db.query(sql)
+    return render_template("series-list.html" , series_list=series_list)
+
+@app.route("/series/<int:series_id>")
+def series(series_id):
+    sql = "SELECT id, title, description, year, episodes FROM series WHERE id = ?"
+    series = db.query(sql, [series_id])
+    if not series:
+        abort(404)
+    series = series[0]
+    return render_template("series.html", series=series)
