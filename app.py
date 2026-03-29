@@ -10,7 +10,7 @@ app.secret_key = config.secret_key
 
 @app.route("/")
 def index():
-    return "hello world"
+    return render_template("index.html")
 
 @app.route("/registration", methods=["GET", "POST"])
 def registration():
@@ -55,8 +55,12 @@ def login():
         user = result[0]
         if check_password_hash(user["password_hash"], password):
             session["user_id"] = user["id"]
-            session["username"] = username
             session["csrf_token"] = secrets.token_hex(16)
             return redirect("/")
 
     return "Wrong username or password"
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")

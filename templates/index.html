@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Animelist</title>
+</head>
+
+<body>
+  <p>
+    <a href="/registration">Register</a> |
+    {% if session.user_id %}
+    <a href="/logout">Log out</a>
+    {% else %}
+    <a href="/login">Log in</a>
+    {% endif %}
+  </p>
+</body>
+
+</html>
