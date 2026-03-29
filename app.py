@@ -170,3 +170,16 @@ def delete_series(series_id):
     sql = "DELETE FROM series WHERE id = ?"
     db.execute(sql, [series_id])
     return redirect("/series")
+
+@app.route("/search")
+def search():
+    query = request.args.get("query")
+    if query:
+        sql = """SELECT id, title, year, episodes
+                 FROM series
+                 WHERE title LIKE ?
+                 ORDER BY created_at DESC"""
+        results = db.query(sql, ["%" + query + "%"])
+    else:
+        results = []
+    return render_template("search.html", query=query, results=results)

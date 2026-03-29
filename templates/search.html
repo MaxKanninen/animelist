@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Search series</title>
+</head>
+
+<body>
+  <h2>Search anime series</h2>
+  <form action="/search" method="GET">
+    <p>
+      <label for="query">Search by title:</label> <br />
+      <input type="text" name="query" id="query" maxlength="100" value="{{ query or '' }}" />
+    </p>
+    <input type="submit" value="Search" />
+  </form>
+
+  {% if results %}
+  <hr />
+  {% for series in results %}
+  <p>
+    <a href="/series/{{ series.id }}">{{ series.title }}</a>
+    <br />
+    {{ series.year }} &middot; {{ series.episodes }} episodes
+  </p>
+  <hr />
+  {% endfor %}
+  {% elif query %}
+  <p>No results found.</p>
+  {% endif %}
+
+  <hr />
+  <p>
+    <a href="/">Back to home page</a>
+  </p>
+</body>
+
+</html>
