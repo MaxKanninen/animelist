@@ -91,6 +91,6 @@ def add_series():
     if not episodes or 1 > episodes > 9999:
         abort(403)
 
-    sql = "INSERT INTO series (title, description, year, episodes) VALUES (?, ?, ?, ?)"
-    db.execute(sql, [title, description, year, episodes])
+    sql = "INSERT INTO series (title, description, year, episodes, user_id, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))"
+    db.execute(sql, [title, description, year, episodes, session["user_id"]])
     return "Anime series added"
