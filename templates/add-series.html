@@ -24,6 +24,7 @@
       Episodes: <br />
       <input type="number" name="episodes" min="1" max="9999" required />
     </p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" /> 
     <input type="submit" value="Add series">
   </form>
 

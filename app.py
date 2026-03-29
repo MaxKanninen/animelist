@@ -8,6 +8,10 @@ import config, db
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+def require_login():
+    if "user_id" not in session:
+        abort(403)
+
 def check_csrf():
     if request.form["csrf_token"] != session["csrf_token"]:
         abort(403)
@@ -27,6 +31,8 @@ def registration():
     if username.startswith(" "):
         return "Username cannot start with a space"
     password1 = request.form["password1"]
+    if not password1 or len(password1) > 100:
+        abort(403)
     password2 = request.form["password2"]
 
     if password1 != password2:
@@ -71,8 +77,12 @@ def logout():
 
 @app.route("/add-series", methods=["GET", "POST"])
 def add_series():
+    require_login()
+
     if request.method == "GET":
         return render_template("add-series.html")
+    
+    check_csrf()
     
     title = request.form["title"]
     if not title or len(title) > 100:
@@ -85,14 +95,14 @@ def add_series():
         year = int(year)
     except ValueError:
         abort(403)
-    if not year or 1 > year > 9999:
+    if year < 1 or year > 9999:
         abort(403)
     episodes = request.form["episodes"]
     try:
         episodes = int(episodes)
     except ValueError:
         abort(403)
-    if not episodes or 1 > episodes > 9999:
+    if episodes < 1 or episodes > 9999:
         abort(403)
 
     sql = "INSERT INTO series (title, description, year, episodes, user_id, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))"
@@ -118,6 +128,8 @@ def series(series_id):
 
 @app.route("/edit-series/<int:series_id>", methods=["GET", "POST"])
 def edit_series(series_id):
+    require_login()
+
     sql = "SELECT id, title, description, year, episodes, user_id FROM series WHERE id = ?"
     result = db.query(sql, [series_id])
     if not result:
@@ -158,9 +170,10 @@ def edit_series(series_id):
 
 @app.route("/delete-series/<int:series_id>", methods=["POST"])
 def delete_series(series_id):
-    if "user_id" not in session:
-        abort(403)
+    require_login()
+
     check_csrf()
+
     sql = "SELECT user_id FROM series WHERE id = ?"
     result = db.query(sql, [series_id])
     if not result:
@@ -174,6 +187,8 @@ def delete_series(series_id):
 @app.route("/search")
 def search():
     query = request.args.get("query")
+    if query and len(query) > 100:
+        abort(403)
     if query:
         sql = """SELECT id, title, year, episodes
                  FROM series
