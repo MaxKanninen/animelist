@@ -64,3 +64,33 @@ def login():
 def logout():
     session.clear()
     return redirect("/")
+
+@app.route("/add-series", methods=["GET", "POST"])
+def add_series():
+    if request.method == "GET":
+        return render_template("add-series.html")
+    
+    title = request.form["title"]
+    if not title or len(title) > 100:
+        abort(403)
+    description = request.form["description"]
+    if not description or len(description) > 5000:
+        abort(403)
+    year = request.form["year"]
+    try:
+        year = int(year)
+    except ValueError:
+        abort(403)
+    if not year or 1 > year > 9999:
+        abort(403)
+    episodes = request.form["episodes"]
+    try:
+        episodes = int(episodes)
+    except ValueError:
+        abort(403)
+    if not episodes or 1 > episodes > 9999:
+        abort(403)
+
+    sql = "INSERT INTO series (title, description, year, episodes) VALUES (?, ?, ?, ?)"
+    db.execute(sql, [title, description, year, episodes])
+    return "Anime series added"

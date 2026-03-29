@@ -6,8 +6,15 @@
 </head>
 
 <body>
+  <h1>Animelist</h1>
   <p>
-    <a href="/registration">Register</a> |
+    {% if session.user_id %}
+    <a href="/add-series">Add an anime series</a>
+    <br />
+    <br />
+    {% endif %}
+    <a href="/registration">Register</a>
+    <br />
     {% if session.user_id %}
     <a href="/logout">Log out</a>
     {% else %}
