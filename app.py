@@ -8,6 +8,10 @@ import config, db
 app = Flask(__name__)
 app.secret_key = config.secret_key
 
+def check_csrf():
+    if request.form["csrf_token"] != session["csrf_token"]:
+        abort(403)
+
 @app.route("/")
 def index():
     return render_template("index.html")
@@ -105,9 +109,49 @@ def series_list():
 
 @app.route("/series/<int:series_id>")
 def series(series_id):
-    sql = "SELECT id, title, description, year, episodes FROM series WHERE id = ?"
+    sql = "SELECT id, title, description, year, episodes, user_id FROM series WHERE id = ?"
     series = db.query(sql, [series_id])
     if not series:
         abort(404)
     series = series[0]
     return render_template("series.html", series=series)
+
+@app.route("/edit-series/<int:series_id>", methods=["GET", "POST"])
+def edit_series(series_id):
+    sql = "SELECT id, title, description, year, episodes, user_id FROM series WHERE id = ?"
+    result = db.query(sql, [series_id])
+    if not result:
+        abort(404)
+    series = result[0]
+    if series["user_id"] != session.get("user_id"):
+        abort(403)
+
+    if request.method == "GET":
+        return render_template("edit-series.html", series=series)
+    
+    check_csrf()
+
+    title = request.form["title"]
+    if not title or len(title) > 100:
+        abort(403)
+    description = request.form["description"]
+    if not description or len(description) > 5000:
+        abort(403)
+    try:
+        year = int(request.form["year"])
+    except ValueError:
+        abort(403)
+    if year < 1 or year > 9999:
+        abort(403)
+    try:
+        episodes = int(request.form["episodes"])
+    except ValueError:
+        abort(403)
+    if episodes < 1 or episodes > 9999:
+        abort(403)
+
+    sql = """UPDATE series
+             SET title = ?, description = ?, year = ?, episodes = ?
+             WHERE id = ?"""
+    db.execute(sql, [title, description, year, episodes, series_id])
+    return redirect("/series/" + str(series_id))

@@ -16,6 +16,11 @@
     Description: <br />
     {{ series.description }} <br />
   </p>
+  {% if session.user_id == series.user_id %}
+  <p>
+    <a href="/edit-series/{{ series.id }}">Edit</a>
+  </p>
+  {% endif %}
 </body>
 
 </html>
