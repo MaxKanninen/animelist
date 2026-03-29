@@ -20,6 +20,10 @@
   <p>
     <a href="/edit-series/{{ series.id }}">Edit</a>
   </p>
+  <form action="/delete-series/{{ series.id }}" method="post">
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+    <input type="submit" value="Delete" />
+  </form>
   {% endif %}
 </body>
 

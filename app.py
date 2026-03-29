@@ -155,3 +155,18 @@ def edit_series(series_id):
              WHERE id = ?"""
     db.execute(sql, [title, description, year, episodes, series_id])
     return redirect("/series/" + str(series_id))
+
+@app.route("/delete-series/<int:series_id>", methods=["POST"])
+def delete_series(series_id):
+    if "user_id" not in session:
+        abort(403)
+    check_csrf()
+    sql = "SELECT user_id FROM series WHERE id = ?"
+    result = db.query(sql, [series_id])
+    if not result:
+        abort(404)
+    if result[0]["user_id"] != session["user_id"]:
+        abort(403)
+    sql = "DELETE FROM series WHERE id = ?"
+    db.execute(sql, [series_id])
+    return redirect("/series")
