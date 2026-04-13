@@ -1,9 +1,8 @@
 from flask import Flask
 from flask import abort, redirect, render_template, request, session
-import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 import secrets
-import config, db, series
+import config, series, users
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -43,13 +42,11 @@ def registration():
     
     password_hash = generate_password_hash(password1)
     
-    try:
-        sql = "INSERT INTO users (username, password_hash) VALUES (?, ?)"
-        db.execute(sql, [username, password_hash])
+    if users.create_user(username, password_hash):
         return "User registration completed"
-    except sqlite3.IntegrityError:
+    else:
         return "Username already taken"
-
+    
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
@@ -58,16 +55,11 @@ def login():
     username = request.form["username"]
     password = request.form["password"]
 
-    sql = "SELECT id, password_hash FROM users WHERE username = ?"
-    result = db.query(sql, [username])
-
-    if len(result) == 1:
-        user = result[0]
-        if check_password_hash(user["password_hash"], password):
-            session["user_id"] = user["id"]
-            session["csrf_token"] = secrets.token_hex(16)
-            return redirect("/")
-
+    user = users.get_user(username)
+    if user and check_password_hash(user["password_hash"], password):
+        session["user_id"] = user["id"]
+        session["csrf_token"] = secrets.token_hex(16)
+        return redirect("/")
     return "Wrong username or password"
 
 @app.route("/logout")
