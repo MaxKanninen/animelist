@@ -3,7 +3,7 @@ from flask import abort, redirect, render_template, request, session
 import sqlite3
 from werkzeug.security import check_password_hash, generate_password_hash
 import secrets
-import config, db
+import config, db, series
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -105,41 +105,35 @@ def add_series():
     if episodes < 1 or episodes > 9999:
         abort(403)
 
-    sql = "INSERT INTO series (title, description, year, episodes, user_id, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))"
-    db.execute(sql, [title, description, year, episodes, session["user_id"]])
+    series.add_series(title, description, year, episodes, session["user_id"])
     return "Anime series added"
 
 @app.route("/series")
 def series_list():
-    sql = """SELECT id, title, year
-             FROM series 
-             ORDER BY created_at DESC"""
-    series_list = db.query(sql)
+    series_list = series.get_all_series()
     return render_template("series-list.html" , series_list=series_list)
 
 @app.route("/series/<int:series_id>")
-def series(series_id):
-    sql = "SELECT id, title, description, year, episodes, user_id FROM series WHERE id = ?"
-    series = db.query(sql, [series_id])
-    if not series:
+def series_page(series_id):
+    result = series.get_series(series_id)
+    if not result:
         abort(404)
-    series = series[0]
-    return render_template("series.html", series=series)
+    series_item = result[0]
+    return render_template("series.html", series=series_item)
 
 @app.route("/edit-series/<int:series_id>", methods=["GET", "POST"])
 def edit_series(series_id):
     require_login()
 
-    sql = "SELECT id, title, description, year, episodes, user_id FROM series WHERE id = ?"
-    result = db.query(sql, [series_id])
+    result = series.get_series(series_id)
     if not result:
         abort(404)
-    series = result[0]
-    if series["user_id"] != session.get("user_id"):
+    series_item = result[0]
+    if series_item["user_id"] != session.get("user_id"):
         abort(403)
 
     if request.method == "GET":
-        return render_template("edit-series.html", series=series)
+        return render_template("edit-series.html", series=series_item)
     
     check_csrf()
 
@@ -162,10 +156,7 @@ def edit_series(series_id):
     if episodes < 1 or episodes > 9999:
         abort(403)
 
-    sql = """UPDATE series
-             SET title = ?, description = ?, year = ?, episodes = ?
-             WHERE id = ?"""
-    db.execute(sql, [title, description, year, episodes, series_id])
+    series.edit_series(title, description, year, episodes, series_id)
     return redirect("/series/" + str(series_id))
 
 @app.route("/delete-series/<int:series_id>", methods=["POST"])
@@ -174,14 +165,12 @@ def delete_series(series_id):
 
     check_csrf()
 
-    sql = "SELECT user_id FROM series WHERE id = ?"
-    result = db.query(sql, [series_id])
+    result = series.get_series(series_id)
     if not result:
         abort(404)
     if result[0]["user_id"] != session["user_id"]:
         abort(403)
-    sql = "DELETE FROM series WHERE id = ?"
-    db.execute(sql, [series_id])
+    series.delete_series(series_id)
     return redirect("/series")
 
 @app.route("/search")
@@ -190,11 +179,7 @@ def search():
     if query and len(query) > 100:
         abort(403)
     if query:
-        sql = """SELECT id, title, year, episodes
-                 FROM series
-                 WHERE title LIKE ?
-                 ORDER BY created_at DESC"""
-        results = db.query(sql, ["%" + query + "%"])
+        results = series.search_series(query)
     else:
         results = []
     return render_template("search.html", query=query, results=results)
