@@ -1,5 +1,4 @@
-from flask import Flask
-from flask import abort, redirect, render_template, request, session
+from flask import Flask, abort, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import secrets
 import config, series, users
