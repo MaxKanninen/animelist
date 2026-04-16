@@ -7,10 +7,17 @@
 
 <body>
   <h2>User registration</h2>
+
+  {% for message in get_flashed_messages() %}
+  <p>
+    <b>{{ message }}</b>
+  </p>
+  {% endfor %}
+
   <form action="/registration" method="post">
     <p>
-      Username: <br />
-      <input type="text" name="username" maxlength="16" required />
+      Username (max 16 characters): <br />
+      <input type="text" name="username" value="{{ filled.username }}" maxlength="16" required />
     </p>
     <p>
       Password: <br />

@@ -19,6 +19,14 @@
     <br />
     <br />
     {% endif %}
+
+    
+  {% for message in get_flashed_messages() %}
+  <p>
+    <b>{{ message }}</b>
+  </p>
+  {% endfor %}
+  
     {% if not session.user_id %}
     <a href="/registration">Register</a>
     {% endif %}
