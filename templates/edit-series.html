@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Edit series</title>
-</head>
+{% block title %}Edit series{% endblock %}
 
-<body>
+{% block content %}
+
   <h2>Edit anime series</h2>
 
   {% for message in get_flashed_messages() %}
@@ -39,6 +37,5 @@
   <p>
     <a href="/series/{{ series.id }}">Cancel</a>
   </p>
-</body>
-
-</html>
+  
+{% endblock %}

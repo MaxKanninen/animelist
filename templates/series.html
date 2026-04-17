@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>{{ series.title }}</title>
-</head>
+{% block title %}{{ series.title }}{% endblock %}
 
-<body>
+{% block content %}
+
   <h2>{{ series.title }}</h2>
 
   {% for message in get_flashed_messages() %}
@@ -33,9 +31,4 @@
   </form>
   {% endif %}
 
-  <p>
-  <a href="/series">Back to series list</a> 
-  </p>
-</body>
-
-</html>
+{% endblock %}

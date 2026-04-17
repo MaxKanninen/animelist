@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>User login</title>
-</head>
+{% block title %}Login{% endblock %}
 
-<body>
+{% block content %}
+
   <h2>User login</h2>
 
   {% for message in get_flashed_messages() %}
@@ -25,11 +23,5 @@
     </p>
     <input type="submit" value="Log in">
   </form>
-
-  <hr />
-  <p>
-    <a href="/">Back to home page</a>
-  </p>
-</body>
-
-</html>
+  
+{% endblock %}

@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>User registration</title>
-</head>
+{% block title %}Register{% endblock %}
 
-<body>
+{% block content %}
+
   <h2>User registration</h2>
 
   {% for message in get_flashed_messages() %}
@@ -29,11 +27,5 @@
     </p>
     <input type="submit" value="Register">
   </form>
-
-  <hr />
-  <p>
-    <a href="/">Back to home page</a>
-  </p>
-</body>
-
-</html>
+  
+{% endblock %}

@@ -1,12 +1,11 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Search series</title>
-</head>
+{% block title %}Search{% endblock %}
 
-<body>
+{% block content %}
+
   <h2>Search anime series</h2>
+
   <form action="/search" method="GET">
     <p>
       <label for="query">Search by title:</label> <br />
@@ -29,10 +28,4 @@
   <p>No results found.</p>
   {% endif %}
 
-  <hr />
-  <p>
-    <a href="/">Back to home page</a>
-  </p>
-</body>
-
-</html>
+{% endblock %}

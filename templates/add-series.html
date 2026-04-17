@@ -1,11 +1,9 @@
-<!DOCTYPE html>
-<html>
+{% extends "layout.html" %}
 
-<head>
-  <title>Add series</title>
-</head>
+{% block title %}Add series{% endblock %}
 
-<body>
+{% block content %}
+
   <h2>Add an anime series</h2>
 
   {% for message in get_flashed_messages() %}
@@ -35,10 +33,4 @@
     <input type="submit" value="Add series">
   </form>
 
-  <hr />
-  <p>
-    <a href="/">Back to home page</a>
-  </p>
-</body>
-
-</html>
+ {% endblock %}
