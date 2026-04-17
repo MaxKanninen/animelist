@@ -20,6 +20,8 @@ def set_series_genres(series_id, genre_id_list):
 def delete_series(series_id):
     sql = "DELETE FROM series_genres WHERE series_id = ?"
     db.execute(sql, [series_id])
+    sql = "DELETE FROM reviews WHERE series_id = ?"
+    db.execute(sql, [series_id])
     sql = "DELETE FROM series WHERE id = ?"
     db.execute(sql, [series_id])
 
@@ -52,3 +54,25 @@ def get_all_genres():
              FROM genres
              ORDER BY name"""
     return db.query(sql)
+
+def get_user_review(user_id, series_id):
+    sql = "SELECT id FROM reviews WHERE user_id = ? AND series_id = ?"
+    return db.query(sql, [user_id, series_id])
+
+def add_review(rating, body, user_id, series_id):
+    sql = """INSERT INTO reviews (rating, body, created_at, user_id, series_id)
+             VALUES (?, ?, datetime('now'), ?, ?)"""
+    db.execute(sql, [rating, body, user_id, series_id])
+
+def get_series_reviews(series_id):
+    sql = """SELECT r.id, r.rating, r.body, r.created_at, r.user_id, u.username
+             FROM reviews r JOIN users u ON u.id = r.user_id
+             WHERE r.series_id = ?
+             ORDER BY r.created_at DESC"""
+    return db.query(sql, [series_id])
+
+def get_series_rating(series_id):
+    sql = """SELECT AVG(rating) AS average, COUNT(*) AS count
+             FROM reviews
+             WHERE series_id = ?"""
+    return db.query(sql, [series_id])[0]

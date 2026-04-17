@@ -25,6 +25,7 @@
     Description: <br />
     {{ series.description }} <br />
   </p>
+
   {% if session.user_id == series.user_id %}
   <p>
     <a href="/edit-series/{{ series.id }}">Edit</a>
@@ -34,5 +35,28 @@
     <input type="submit" value="Delete" />
   </form>
   {% endif %}
+
+  <hr />
+  <h3>Reviews</h3>
+  <p>
+    {% if rating.count %}
+    Average rating: {{ rating.average|round(2) }} ({{ rating.count }} reviews)
+    {% else %}
+    No reviews yet
+    {% endif %}
+  </p>
+
+  {% if session.user_id %}
+  <p>
+    <a href="/series/{{ series.id }}/review">Add review</a>
+  </p>
+  {% endif %}
+
+  {% for review in reviews %}
+  <p>
+    <b>{{ review.username }}</b> rated {{ review.rating }}/5 on {{ review.created_at }} <br />
+    {{ review.body }}
+  </p>
+  {% endfor %}
 
 {% endblock %}

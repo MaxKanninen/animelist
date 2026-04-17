@@ -1,7 +1,11 @@
+import secrets
+
 from flask import Flask, abort, flash, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
-import secrets
-import config, db, series, users
+import config
+import db
+import series
+import users
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -33,7 +37,7 @@ def registration():
     if username.startswith(" "):
         flash("Username cannot start with a blank space")
         return render_template("registration.html", filled={})
-    
+
     password1 = request.form["password1"]
     if not password1:
         flash("No password entered")
@@ -49,21 +53,20 @@ def registration():
         flash("Passwords don't match")
         filled = {"username": username}
         return render_template("registration.html", filled=filled)
-    
+
     if password1.startswith(" "):
         flash("Password cannot start with a blank space")
         filled = {"username": username}
         return render_template("registration.html", filled=filled)
-    
+
     password_hash = generate_password_hash(password1)
-    
+
     if users.create_user(username, password_hash):
         flash("User registration successful")
         return redirect("/")
-    else:
-        flash("Username already taken")
-        return render_template("registration.html", filled={})
-    
+    flash("Username already taken")
+    return render_template("registration.html", filled={})
+
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
@@ -92,7 +95,7 @@ def add_series():
     if request.method == "GET":
         genres = series.get_all_genres()
         return render_template("add-series.html", genres=genres, selected_ids=[], filled={})
-    
+
     check_csrf()
 
     title = request.form["title"]
@@ -111,7 +114,8 @@ def add_series():
 
     def error(msg):
         flash(msg)
-        return render_template("add-series.html", filled=filled, genres=all_genres, selected_ids=genre_ids)
+        return render_template("add-series.html", filled=filled,
+                               genres=all_genres, selected_ids=genre_ids)
 
     if not title:
         return error("No title entered")
@@ -141,8 +145,8 @@ def add_series():
 
 @app.route("/series")
 def series_list():
-    series_list = series.get_all_series()
-    return render_template("series-list.html" , series_list=series_list)
+    all_series = series.get_all_series()
+    return render_template("series-list.html", series_list=all_series)
 
 @app.route("/series/<int:series_id>")
 def series_page(series_id):
@@ -151,7 +155,10 @@ def series_page(series_id):
         abort(404)
     series_item = result[0]
     genres = series.get_series_genres(series_id)
-    return render_template("series.html", series=series_item, genres=genres)
+    rating = series.get_series_rating(series_id)
+    reviews = series.get_series_reviews(series_id)
+    return render_template("series.html", series=series_item, genres=genres,
+                           rating=rating, reviews=reviews)
 
 @app.route("/edit-series/<int:series_id>", methods=["GET", "POST"])
 def edit_series(series_id):
@@ -232,6 +239,44 @@ def delete_series(series_id):
     series.delete_series(series_id)
     flash("Anime successfully deleted")
     return redirect("/series")
+
+@app.route("/series/<int:series_id>/review", methods=["GET", "POST"])
+def add_review(series_id):
+    require_login()
+
+    result = series.get_series(series_id)
+    if not result:
+        abort(404)
+    series_item = result[0]
+
+    if series.get_user_review(session["user_id"], series_id):
+        flash("You have already reviewed this series")
+        return redirect("/series/" + str(series_id))
+
+    if request.method == "GET":
+        return render_template("review.html", series=series_item, filled={})
+
+    check_csrf()
+
+    rating = request.form["rating"]
+    body = request.form["body"]
+
+    filled = {"rating": rating, "body": body}
+
+    def error(msg):
+        flash(msg)
+        return render_template("review.html", series=series_item, filled=filled)
+
+    if rating not in ("1", "2", "3", "4", "5"):
+        return error("Rating must be between 1 and 5")
+    if not body:
+        return error("No review entered")
+    if len(body) > 5000:
+        return error("Review too long (max 5000 characters)")
+
+    series.add_review(rating, body, session["user_id"], series_id)
+    flash("Review added successfully")
+    return redirect("/series/" + str(series_id))
 
 @app.route("/search")
 def search():
