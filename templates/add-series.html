@@ -29,7 +29,17 @@
       Episodes: <br />
       <input type="number" name="episodes" value="{{ filled.episodes }}" min="1" max="9999" required />
     </p>
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" /> 
+    <p>
+      Genres: <br />
+      {% for genre in genres %}
+      <label>
+        <input type="checkbox" name="genres" value="{{ genre.id }}"
+          {% if genre.id in selected_ids %}checked{% endif %} />
+        {{ genre.name }}
+      </label><br />
+      {% endfor %}
+    </p>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
     <input type="submit" value="Add series">
   </form>
 

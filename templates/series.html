@@ -18,6 +18,10 @@
     Episodes:
     {{ series.episodes }} <br />
     <br />
+    Genres:
+    {% if genres %}{% for g in genres %}{{ g.name }}{% if not loop.last %}, {% endif %}{% endfor %}{% else %}none{% endif %}
+    <br />
+    <br />
     Description: <br />
     {{ series.description }} <br />
   </p>

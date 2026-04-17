@@ -10,7 +10,16 @@ def edit_series(title, description, year, episodes, series_id):
              WHERE id = ?"""
     db.execute(sql, [title, description, year, episodes, series_id])
 
+def set_series_genres(series_id, genre_id_list):
+    sql = "DELETE FROM series_genres WHERE series_id = ?"
+    db.execute(sql, [series_id])
+    for genre_id in genre_id_list:
+        sql = "INSERT INTO series_genres (series_id, genre_id) VALUES (?, ?)"
+        db.execute(sql, [series_id, genre_id])
+
 def delete_series(series_id):
+    sql = "DELETE FROM series_genres WHERE series_id = ?"
+    db.execute(sql, [series_id])
     sql = "DELETE FROM series WHERE id = ?"
     db.execute(sql, [series_id])
 
@@ -18,9 +27,16 @@ def get_series(series_id):
     sql = "SELECT id, title, description, year, episodes, user_id FROM series WHERE id = ?"
     return db.query(sql, [series_id])
 
+def get_series_genres(series_id):
+    sql = """SELECT g.id, g.name
+             FROM genres g JOIN series_genres sg ON sg.genre_id = g.id
+             WHERE sg.series_id = ?
+             ORDER BY g.name"""
+    return db.query(sql, [series_id])
+
 def get_all_series():
     sql = """SELECT id, title, year
-             FROM series 
+             FROM series
              ORDER BY created_at DESC"""
     return db.query(sql)
 
@@ -30,3 +46,9 @@ def search_series(query):
              WHERE title LIKE ?
              ORDER BY created_at DESC"""
     return db.query(sql, ["%" + query + "%"])
+
+def get_all_genres():
+    sql = """SELECT id, name
+             FROM genres
+             ORDER BY name"""
+    return db.query(sql)

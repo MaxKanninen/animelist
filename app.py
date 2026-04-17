@@ -1,7 +1,7 @@
 from flask import Flask, abort, flash, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import secrets
-import config, series, users
+import config, db, series, users
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
@@ -90,53 +90,52 @@ def add_series():
     require_login()
 
     if request.method == "GET":
-        return render_template("add-series.html", filled={})
+        genres = series.get_all_genres()
+        return render_template("add-series.html", genres=genres, selected_ids=[], filled={})
     
     check_csrf()
-    
+
     title = request.form["title"]
     description = request.form["description"]
     year = request.form["year"]
     episodes = request.form["episodes"]
+    genre_ids_raw = request.form.getlist("genres")
+
+    try:
+        genre_ids = [int(g) for g in genre_ids_raw]
+    except ValueError:
+        abort(403)
+
+    filled = {"title": title, "description": description, "year": year, "episodes": episodes}
+    all_genres = series.get_all_genres()
+
+    def error(msg):
+        flash(msg)
+        return render_template("add-series.html", filled=filled, genres=all_genres, selected_ids=genre_ids)
 
     if not title:
-        flash("No title entered")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("add-series.html", filled=filled)
+        return error("No title entered")
     if len(title) > 100:
-        flash("Title too long (max 100 characters)")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("add-series.html", filled=filled)
+        return error("Title too long (max 100 characters)")
     if not description:
-        flash("No description entered")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("add-series.html", filled=filled)
+        return error("No description entered")
     if len(description) > 5000:
-        flash("Description too long (max 5000 characters)")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("add-series.html", filled=filled)
+        return error("Description too long (max 5000 characters)")
     try:
         year = int(year)
     except ValueError:
-        flash("Invalid release year entered")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("add-series.html", filled=filled)
+        return error("Invalid release year entered")
     if year < 1900 or year > 2050:
-        flash("Invalid release year (needs to be between 1900-2050)")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("add-series.html", filled=filled)
+        return error("Invalid release year (needs to be between 1900-2050)")
     try:
         episodes = int(episodes)
     except ValueError:
-        flash("Invalid episode amount entered")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("add-series.html", filled=filled)
+        return error("Invalid episode amount entered")
     if episodes < 1 or episodes > 9999:
-        flash("Invalid amount of episodes (needs to be between 1-9999)")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("add-series.html", filled=filled)
+        return error("Invalid amount of episodes (needs to be between 1-9999)")
 
     series.add_series(title, description, year, episodes, session["user_id"])
+    series.set_series_genres(db.last_insert_id(), genre_ids)
     flash("Anime added successfully")
     return redirect("/series")
 
@@ -151,7 +150,8 @@ def series_page(series_id):
     if not result:
         abort(404)
     series_item = result[0]
-    return render_template("series.html", series=series_item)
+    genres = series.get_series_genres(series_id)
+    return render_template("series.html", series=series_item, genres=genres)
 
 @app.route("/edit-series/<int:series_id>", methods=["GET", "POST"])
 def edit_series(series_id):
@@ -164,10 +164,14 @@ def edit_series(series_id):
     if series_item["user_id"] != session.get("user_id"):
         abort(403)
 
+    all_genres = series.get_all_genres()
+
     if request.method == "GET":
         filled = {"title": series_item["title"], "description": series_item["description"],
                   "year": series_item["year"], "episodes": series_item["episodes"]}
-        return render_template("edit-series.html", series=series_item, filled=filled)
+        selected_ids = [row["id"] for row in series.get_series_genres(series_id)]
+        return render_template("edit-series.html", series=series_item, filled=filled,
+                               genres=all_genres, selected_ids=selected_ids)
 
     check_csrf()
 
@@ -175,45 +179,42 @@ def edit_series(series_id):
     description = request.form["description"]
     year = request.form["year"]
     episodes = request.form["episodes"]
+    genre_ids_raw = request.form.getlist("genres")
+    try:
+        genre_ids = [int(g) for g in genre_ids_raw]
+    except ValueError:
+        abort(403)
+
+    filled = {"title": title, "description": description, "year": year, "episodes": episodes}
+
+    def error(msg):
+        flash(msg)
+        return render_template("edit-series.html", series=series_item, filled=filled,
+                               genres=all_genres, selected_ids=genre_ids)
 
     if not title:
-        flash("No title entered")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("edit-series.html", series=series_item, filled=filled)
+        return error("No title entered")
     if len(title) > 100:
-        flash("Title too long (max 100 characters)")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("edit-series.html", series=series_item, filled=filled)
+        return error("Title too long (max 100 characters)")
     if not description:
-        flash("No description entered")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("edit-series.html", series=series_item, filled=filled)
+        return error("No description entered")
     if len(description) > 5000:
-        flash("Description too long (max 5000 characters)")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("edit-series.html", series=series_item, filled=filled)
+        return error("Description too long (max 5000 characters)")
     try:
         year = int(year)
     except ValueError:
-        flash("Invalid release year entered")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("edit-series.html", series=series_item, filled=filled)
+        return error("Invalid release year entered")
     if year < 1900 or year > 2050:
-        flash("Invalid release year (needs to be between 1900-2050)")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("edit-series.html", series=series_item, filled=filled)
+        return error("Invalid release year (needs to be between 1900-2050)")
     try:
         episodes = int(episodes)
     except ValueError:
-        flash("Invalid episode amount entered")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("edit-series.html", series=series_item, filled=filled)
+        return error("Invalid episode amount entered")
     if episodes < 1 or episodes > 9999:
-        flash("Invalid amount of episodes (needs to be between 1-9999)")
-        filled = {"title": title, "description": description, "year": year, "episodes": episodes}
-        return render_template("edit-series.html", series=series_item, filled=filled)
+        return error("Invalid amount of episodes (needs to be between 1-9999)")
 
     series.edit_series(title, description, year, episodes, series_id)
+    series.set_series_genres(series_id, genre_ids)
     flash("Anime edited successfully")
     return redirect("/series/" + str(series_id))
 
