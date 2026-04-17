@@ -7,6 +7,13 @@
 
 <body>
   <h2>User login</h2>
+
+  {% for message in get_flashed_messages() %}
+  <p>
+    <b>{{ message }}</b>
+  </p>
+  {% endfor %}
+
   <form action="/login" method="post">
     <p>
       Username: <br />

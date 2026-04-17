@@ -77,7 +77,8 @@ def login():
         session["user_id"] = user["id"]
         session["csrf_token"] = secrets.token_hex(16)
         return redirect("/")
-    return "Wrong username or password"
+    flash("Wrong username or password")
+    return redirect("/login")
 
 @app.route("/logout")
 def logout():
@@ -228,6 +229,7 @@ def delete_series(series_id):
     if result[0]["user_id"] != session["user_id"]:
         abort(403)
     series.delete_series(series_id)
+    flash("Anime successfully deleted")
     return redirect("/series")
 
 @app.route("/search")
