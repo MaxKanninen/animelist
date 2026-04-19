@@ -17,8 +17,8 @@ def execute(sql, params=None):
     con.close()
 
 def last_insert_id():
-    return g.last_insert_id    
-    
+    return g.last_insert_id
+
 def query(sql, params=None):
     if params is None:
         params = []
