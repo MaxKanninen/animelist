@@ -278,6 +278,15 @@ def add_review(series_id):
     flash("Review added successfully")
     return redirect("/series/" + str(series_id))
 
+@app.route("/user/<int:user_id>")
+def show_user(user_id):
+    user = users.get_user_by_id(user_id)
+    if not user:
+        abort(404)
+    stats = users.get_user_stats(user_id)
+    user_series = users.get_user_series(user_id)
+    return render_template("user.html", user=user, stats=stats, user_series=user_series)
+
 @app.route("/search")
 def search():
     query = request.args.get("query")

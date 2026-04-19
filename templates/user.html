@@ -1,0 +1,33 @@
+{% extends "layout.html" %}
+
+{% block title %}User {{ user.username }}{% endblock %}
+
+{% block content %}
+
+  <h2>User {{ user.username }}</h2>
+
+  {% for message in get_flashed_messages() %}
+  <p><b>{{ message }}</b></p>
+  {% endfor %}
+
+  <p>
+    Animes submitted: {{ stats.series_count }} <br />
+    Reviews written: {{ stats.reviews_count }} <br />
+    {% if stats.avg_rating %}
+    Average rating given: {{ stats.avg_rating | round(2) }}
+    {% endif %}
+  </p>
+
+  <h3>Submitted animes</h3>
+
+  {% if user_series %}
+  <ul>
+    {% for s in user_series %}
+    <li><a href="/series/{{ s.id }}">{{ s.title }}</a> ({{ s.year }})</li>
+    {% endfor %}
+  </ul>
+  {% else %}
+  <p>No animes submitted yet.</p>
+  {% endif %}
+
+{% endblock %}

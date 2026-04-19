@@ -22,6 +22,8 @@
     {% if genres %}{% for g in genres %}{{ g.name }}{% if not loop.last %}, {% endif %}{% endfor %}{% else %}none{% endif %}
     <br />
     <br />
+    Added by: <a href="/user/{{ series.user_id }}">{{ series.username }}</a> <br />
+    <br />
     Description: <br />
     {{ series.description }} <br />
   </p>
@@ -54,7 +56,7 @@
 
   {% for review in reviews %}
   <p>
-    <b>{{ review.username }}</b> rated {{ review.rating }}/5 on {{ review.created_at }} <br />
+    <b><a href="/user/{{ review.user_id }}">{{ review.username }}</a></b> rated {{ review.rating }}/5 on {{ review.created_at }} <br />
     {{ review.body }}
   </p>
   {% endfor %}

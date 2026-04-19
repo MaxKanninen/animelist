@@ -1,7 +1,8 @@
 import db
 
 def add_series(title, description, year, episodes, user_id):
-    sql = "INSERT INTO series (title, description, year, episodes, user_id, created_at) VALUES (?, ?, ?, ?, ?, datetime('now'))"
+    sql = """INSERT INTO series (title, description, year, episodes, user_id, created_at)
+             VALUES (?, ?, ?, ?, ?, datetime('now'))"""
     db.execute(sql, [title, description, year, episodes, user_id])
 
 def edit_series(title, description, year, episodes, series_id):
@@ -26,7 +27,9 @@ def delete_series(series_id):
     db.execute(sql, [series_id])
 
 def get_series(series_id):
-    sql = "SELECT id, title, description, year, episodes, user_id FROM series WHERE id = ?"
+    sql = """SELECT s.id, s.title, s.description, s.year, s.episodes, s.user_id, u.username
+             FROM series s JOIN users u ON u.id = s.user_id
+             WHERE s.id = ?"""
     return db.query(sql, [series_id])
 
 def get_series_genres(series_id):
