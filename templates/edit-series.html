@@ -7,9 +7,7 @@
   <h2>Edit anime series</h2>
 
   {% for message in get_flashed_messages() %}
-  <p>
-    <b>{{ message }}</b>
-  </p>
+  <p class="flash">{{ message }}</p>
   {% endfor %}
 
   <form action="/edit-series/{{ series.id }}" method="post">

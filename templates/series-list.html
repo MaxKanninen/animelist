@@ -7,19 +7,14 @@
   <h2>All anime series</h2>
 
   {% for message in get_flashed_messages() %}
-  <p>
-    <b>{{ message }}</b>
-  </p>
+  <p class="flash">{{ message }}</p>
   {% endfor %}
 
-  <hr />
   {% for series in series_list %}
-  <p>
+  <div class="card">
     <a href="/series/{{ series.id }}">{{ series.title }}</a>
-    <br />
-    {{ series.year }}
-  </p>
-  <hr />
+    <span class="meta"> &middot; {{ series.year }}</span>
+  </div>
   {% endfor %}
 
 {% endblock %}

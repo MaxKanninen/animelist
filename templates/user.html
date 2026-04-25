@@ -4,10 +4,10 @@
 
 {% block content %}
 
-  <h2>User {{ user.username }}</h2>
+  <h2>{{ user.username }}</h2>
 
   {% for message in get_flashed_messages() %}
-  <p><b>{{ message }}</b></p>
+  <p class="flash">{{ message }}</p>
   {% endfor %}
 
   <p>
@@ -21,11 +21,12 @@
   <h3>Submitted animes</h3>
 
   {% if user_series %}
-  <ul>
-    {% for s in user_series %}
-    <li><a href="/series/{{ s.id }}">{{ s.title }}</a> ({{ s.year }})</li>
-    {% endfor %}
-  </ul>
+  {% for s in user_series %}
+  <div class="card">
+    <a href="/series/{{ s.id }}">{{ s.title }}</a>
+    <span class="meta"> &middot; {{ s.year }}</span>
+  </div>
+  {% endfor %}
   {% else %}
   <p>No animes submitted yet.</p>
   {% endif %}

@@ -7,9 +7,7 @@
   <h2>User registration</h2>
 
   {% for message in get_flashed_messages() %}
-  <p>
-    <b>{{ message }}</b>
-  </p>
+  <p class="flash">{{ message }}</p>
   {% endfor %}
 
   <form action="/registration" method="post">

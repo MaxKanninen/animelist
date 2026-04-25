@@ -15,14 +15,11 @@
   </form>
 
   {% if results %}
-  <hr />
   {% for series in results %}
-  <p>
+  <div class="card">
     <a href="/series/{{ series.id }}">{{ series.title }}</a>
-    <br />
-    {{ series.year }} &middot; {{ series.episodes }} episodes
-  </p>
-  <hr />
+    <span class="meta"> &middot; {{ series.year }} &middot; {{ series.episodes }} episodes</span>
+  </div>
   {% endfor %}
   {% elif query %}
   <p>No results found.</p>

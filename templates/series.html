@@ -7,9 +7,7 @@
   <h2>{{ series.title }}</h2>
 
   {% for message in get_flashed_messages() %}
-  <p>
-    <b>{{ message }}</b>
-  </p>
+  <p class="flash">{{ message }}</p>
   {% endfor %}
 
   <p>
@@ -19,7 +17,7 @@
     {{ series.episodes }} <br />
     <br />
     Genres:
-    {% if genres %}{% for g in genres %}{{ g.name }}{% if not loop.last %}, {% endif %}{% endfor %}{% else %}none{% endif %}
+    {% if genres %}{% for g in genres %}<span class="tag">{{ g.name }}</span>{% endfor %}{% else %}none{% endif %}
     <br />
     <br />
     Added by: <a href="/user/{{ series.user_id }}">{{ series.username }}</a> <br />
@@ -55,10 +53,11 @@
   {% endif %}
 
   {% for review in reviews %}
-  <p>
-    <b><a href="/user/{{ review.user_id }}">{{ review.username }}</a></b> rated {{ review.rating }}/5 on {{ review.created_at }} <br />
-    {{ review.body }}
-  </p>
+  <div class="review">
+    <b><a href="/user/{{ review.user_id }}">{{ review.username }}</a></b>
+    <span class="meta"> rated {{ review.rating }}/5 on {{ review.created_at }}</span>
+    <p>{{ review.body }}</p>
+  </div>
   {% endfor %}
 
 {% endblock %}
