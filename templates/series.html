@@ -46,7 +46,7 @@
     {% endif %}
   </p>
 
-  {% if session.user_id %}
+  {% if session.user_id and not user_review %}
   <p>
     <a href="/series/{{ series.id }}/review">Add review</a>
   </p>

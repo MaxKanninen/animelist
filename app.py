@@ -177,8 +177,11 @@ def series_page(series_id):
     genres = series.get_series_genres(series_id)
     rating = series.get_series_rating(series_id)
     reviews = series.get_series_reviews(series_id)
+    user_review = None
+    if "user_id" in session:
+        user_review = series.get_user_review(session["user_id"], series_id)
     return render_template("series.html", series=series_item, genres=genres,
-                           rating=rating, reviews=reviews)
+                           rating=rating, reviews=reviews, user_review=user_review)
 
 @app.route("/edit-series/<int:series_id>", methods=["GET", "POST"])
 def edit_series(series_id):
