@@ -86,3 +86,11 @@ def get_series_rating(series_id):
              FROM reviews
              WHERE series_id = ?"""
     return db.query(sql, [series_id])[0]
+
+def get_review(review_id):
+    sql = "SELECT id, user_id, series_id FROM reviews WHERE id = ?"
+    return db.query(sql, [review_id])
+
+def delete_review(review_id):
+    sql = "DELETE FROM reviews WHERE id = ?"
+    db.execute(sql, [review_id])

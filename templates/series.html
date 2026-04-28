@@ -57,6 +57,12 @@
     <b><a href="/user/{{ review.user_id }}">{{ review.username }}</a></b>
     <span class="meta"> rated {{ review.rating }}/5 on {{ review.created_at }}</span>
     <p>{{ review.body | show_lines }}</p>
+    {% if session.user_id == review.user_id %}
+    <form action="/series/{{ series.id }}/review/{{ review.id }}/delete" method="post">
+      <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}" />
+      <input type="submit" value="Delete" />
+    </form>
+    {% endif %}
   </div>
   {% endfor %}
 

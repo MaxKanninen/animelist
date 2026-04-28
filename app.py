@@ -301,6 +301,19 @@ def add_review(series_id):
     flash("Review added successfully")
     return redirect("/series/" + str(series_id))
 
+@app.route("/series/<int:series_id>/review/<int:review_id>/delete", methods=["POST"])
+def delete_review(series_id, review_id):
+    require_login()
+    check_csrf()
+    result = series.get_review(review_id)
+    if not result:
+        abort(404)
+    if result[0]["user_id"] != session["user_id"]:
+        abort(403)
+    series.delete_review(review_id)
+    flash("Review deleted")
+    return redirect("/series/" + str(series_id))
+
 @app.route("/user/<int:user_id>")
 def show_user(user_id):
     user = users.get_user_by_id(user_id)
