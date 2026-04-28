@@ -34,15 +34,16 @@ CREATE TABLE reviews (
     series_id INTEGER NOT NULL REFERENCES series
 );
 
-INSERT INTO genres (name) VALUES ('Action');
-INSERT INTO genres (name) VALUES ('Comedy');
-INSERT INTO genres (name) VALUES ('Drama');
-INSERT INTO genres (name) VALUES ('Fantasy');
-INSERT INTO genres (name) VALUES ('Horror');
-INSERT INTO genres (name) VALUES ('Romance');
-INSERT INTO genres (name) VALUES ('Sci-Fi');
-INSERT INTO genres (name) VALUES ('Slice of Life');
-INSERT INTO genres (name) VALUES ('Sports');
-INSERT INTO genres (name) VALUES ('Thriller');
+INSERT INTO genres (name) VALUES
+    ('Action'),
+    ('Comedy'),
+    ('Drama'),
+    ('Fantasy'),
+    ('Horror'),
+    ('Romance'),
+    ('Sci-Fi'),
+    ('Slice of Life'),
+    ('Sports'),
+    ('Thriller');
 
 CREATE INDEX idx_reviews_series_id ON reviews (series_id);
