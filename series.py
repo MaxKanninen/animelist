@@ -39,11 +39,18 @@ def get_series_genres(series_id):
              ORDER BY g.name"""
     return db.query(sql, [series_id])
 
-def get_all_series():
+def get_series_count():
+    sql = "SELECT COUNT(*) FROM series"
+    return db.query(sql)[0][0]
+
+def get_all_series(page, page_size):
     sql = """SELECT id, title, year
              FROM series
-             ORDER BY created_at DESC"""
-    return db.query(sql)
+             ORDER BY created_at DESC
+             LIMIT ? OFFSET ?"""
+    limit = page_size
+    offset = page_size * (page - 1)
+    return db.query(sql, [limit, offset])
 
 def search_series(query):
     sql = """SELECT id, title, year, episodes

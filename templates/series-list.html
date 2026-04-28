@@ -17,4 +17,10 @@
   </div>
   {% endfor %}
 
+  <p class="page-nav">
+    <a href="/series/page/{{ page - 1 }}">&lt;&lt;</a>
+    Page {{ page }}/{{ page_count }}
+    <a href="/series/page/{{ page + 1 }}">&gt;&gt;</a>
+  </p>
+
 {% endblock %}

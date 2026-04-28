@@ -1,3 +1,4 @@
+import math
 import secrets
 
 import markupsafe
@@ -151,9 +152,21 @@ def add_series():
     return redirect("/series")
 
 @app.route("/series")
-def series_list():
-    all_series = series.get_all_series()
-    return render_template("series-list.html", series_list=all_series)
+@app.route("/series/page/<int:page>")
+def series_list(page=1):
+    series_count = series.get_series_count()
+    page_size = 10
+    page_count = math.ceil(series_count / page_size)
+    page_count = max(page_count, 1)
+
+    if page < 1:
+        return redirect("/series/page/1")
+    if page > page_count:
+        return redirect("/series/page/" + str(page_count))
+
+    all_series = series.get_all_series(page, page_size)
+    return render_template("series-list.html",
+                           series_list=all_series, page=page, page_count=page_count)
 
 @app.route("/series/<int:series_id>")
 def series_page(series_id):
