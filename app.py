@@ -1,5 +1,6 @@
 import secrets
 
+import markupsafe
 from flask import Flask, abort, flash, redirect, render_template, request, session
 from werkzeug.security import check_password_hash, generate_password_hash
 import config
@@ -9,6 +10,12 @@ import users
 
 app = Flask(__name__)
 app.secret_key = config.secret_key
+
+@app.template_filter()
+def show_lines(content):
+    content = str(markupsafe.escape(content))
+    content = content.replace("\n", "<br />")
+    return markupsafe.Markup(content)
 
 def require_login():
     if "user_id" not in session:

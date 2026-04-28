@@ -23,7 +23,7 @@
     Added by: <a href="/user/{{ series.user_id }}">{{ series.username }}</a> <br />
     <br />
     Description: <br />
-    {{ series.description }} <br />
+    {{ series.description | show_lines }}
   </p>
 
   {% if session.user_id == series.user_id %}
@@ -56,7 +56,7 @@
   <div class="review">
     <b><a href="/user/{{ review.user_id }}">{{ review.username }}</a></b>
     <span class="meta"> rated {{ review.rating }}/5 on {{ review.created_at }}</span>
-    <p>{{ review.body }}</p>
+    <p>{{ review.body | show_lines }}</p>
   </div>
   {% endfor %}
 
