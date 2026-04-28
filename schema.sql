@@ -44,3 +44,5 @@ INSERT INTO genres (name) VALUES ('Sci-Fi');
 INSERT INTO genres (name) VALUES ('Slice of Life');
 INSERT INTO genres (name) VALUES ('Sports');
 INSERT INTO genres (name) VALUES ('Thriller');
+
+CREATE INDEX idx_reviews_series_id ON reviews (series_id);
