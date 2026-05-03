@@ -18,6 +18,10 @@
     {% endif %}
   </p>
 
+  {% if session.user_id == user.id %}
+  <p><a href="/add-series" class="btn">Add anime series</a></p>
+  {% endif %}
+
   <h3>Submitted animes</h3>
 
   {% if user_series %}

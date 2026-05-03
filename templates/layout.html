@@ -22,6 +22,7 @@
         <li><a href="/registration">Register</a></li>
         {% endif %}
         {% if session.user_id %}
+        <li><a href="/add-series">Add anime series</a></li>
         <li><a href="/user/{{ session.user_id }}">My profile</a></li>
         <li><a href="/logout">Log out</a></li>
         {% else %}
