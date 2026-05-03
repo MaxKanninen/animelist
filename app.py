@@ -74,7 +74,7 @@ def registration():
         flash("User registration successful")
         return redirect("/")
     flash("Username already taken")
-    return render_template("registration.html", filled={})
+    return render_template("registration.html", filled={"username": username})
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
