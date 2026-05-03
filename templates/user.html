@@ -28,7 +28,7 @@
   {% for s in user_series %}
   <div class="card">
     <a href="/series/{{ s.id }}">{{ s.title }}</a>
-    <span class="meta"> &middot; {{ s.year }}</span>
+    <span class="meta"> &middot; {{ s.year }} &middot; {{ s.episodes }} episodes</span>
   </div>
   {% endfor %}
   {% else %}

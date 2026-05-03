@@ -30,7 +30,7 @@ def get_user_stats(user_id):
             "avg_rating": reviews["avg_rating"]}
 
 def get_user_series(user_id):
-    sql = """SELECT id, title, year
+    sql = """SELECT id, title, year, episodes
              FROM series
              WHERE user_id = ?
              ORDER BY created_at DESC"""

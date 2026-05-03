@@ -13,7 +13,7 @@
   {% for series in series_list %}
   <div class="card">
     <a href="/series/{{ series.id }}">{{ series.title }}</a>
-    <span class="meta"> &middot; {{ series.year }}</span>
+    <span class="meta"> &middot; {{ series.year }} &middot; {{ series.episodes }} episodes</span>
   </div>
   {% endfor %}
 
