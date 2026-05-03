@@ -28,14 +28,14 @@ def delete_series(series_id):
 
 def get_series(series_id):
     sql = """SELECT s.id, s.title, s.description, s.year, s.episodes, s.user_id, u.username
-             FROM series s JOIN users u ON u.id = s.user_id
-             WHERE s.id = ?"""
+             FROM series s, users u
+             WHERE u.id = s.user_id AND s.id = ?"""
     return db.query(sql, [series_id])
 
 def get_series_genres(series_id):
     sql = """SELECT g.id, g.name
-             FROM genres g JOIN series_genres sg ON sg.genre_id = g.id
-             WHERE sg.series_id = ?
+             FROM genres g, series_genres sg
+             WHERE sg.genre_id = g.id AND sg.series_id = ?
              ORDER BY g.name"""
     return db.query(sql, [series_id])
 
@@ -76,8 +76,8 @@ def add_review(rating, body, user_id, series_id):
 
 def get_series_reviews(series_id):
     sql = """SELECT r.id, r.rating, r.body, r.created_at, r.user_id, u.username
-             FROM reviews r JOIN users u ON u.id = r.user_id
-             WHERE r.series_id = ?
+             FROM reviews r, users u
+             WHERE u.id = r.user_id AND r.series_id = ?
              ORDER BY r.created_at DESC"""
     return db.query(sql, [series_id])
 

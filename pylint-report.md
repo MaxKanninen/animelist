@@ -33,6 +33,8 @@ db.py:4:0: C0116: Missing function or method docstring (missing-function-docstri
 db.py:10:0: C0116: Missing function or method docstring (missing-function-docstring)
 db.py:19:0: C0116: Missing function or method docstring (missing-function-docstring)
 db.py:22:0: C0116: Missing function or method docstring (missing-function-docstring)
+************* Module seed
+seed.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 ************* Module series
 series.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 series.py:3:0: C0116: Missing function or method docstring (missing-function-docstring)
@@ -60,7 +62,7 @@ users.py:22:0: C0116: Missing function or method docstring (missing-function-doc
 users.py:32:0: C0116: Missing function or method docstring (missing-function-docstring)
 
 ------------------------------------------------------------------
-Your code has been rated at 8.63/10 (previous run: 8.63/10, +0.00)
+Your code has been rated at 8.69/10 (previous run: 8.63/10, +0.05)
 ```
 
 The remaining warnings are grouped by type below, with the reasoning for leaving them in place.
@@ -74,7 +76,7 @@ app.py:1:0: C0114: Missing module docstring (missing-module-docstring)
 app.py:16:0: C0116: Missing function or method docstring (missing-function-docstring)
 ```
 
-The application does not use docstrings. The route handlers and the helper functions in `series.py` and `users.py` are short and named after what they do, so a docstring would only restate the function name.
+The application does not use docstrings. The route handlers and the helper functions in `series.py` and `users.py` are short and named after what they do, so a docstring would only restate the function name. The same applies to `seed.py`, whose purpose is evident from its name and contents.
 
 ## Too many return statements
 

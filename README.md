@@ -42,8 +42,8 @@ The series page runs the following query to read the reviews of one series:
 
 ```sql
 SELECT r.id, r.rating, r.body, r.created_at, r.user_id, u.username
-FROM reviews r JOIN users u ON u.id = r.user_id
-WHERE r.series_id = ?
+FROM reviews r, users u
+WHERE u.id = r.user_id AND r.series_id = ?
 ORDER BY r.created_at DESC
 ```
 
