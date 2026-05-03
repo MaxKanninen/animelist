@@ -53,7 +53,7 @@ def get_series_count():
 def get_all_series(page, page_size):
     sql = """SELECT id, title, year, episodes
              FROM series
-             ORDER BY created_at DESC
+             ORDER BY title COLLATE NOCASE
              LIMIT ? OFFSET ?"""
     limit = page_size
     offset = page_size * (page - 1)
