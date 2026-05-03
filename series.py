@@ -39,6 +39,13 @@ def get_series_genres(series_id):
              ORDER BY g.name"""
     return db.query(sql, [series_id])
 
+def get_latest_series():
+    sql = """SELECT id, title, year
+             FROM series
+             ORDER BY year DESC, created_at DESC
+             LIMIT 10"""
+    return db.query(sql)
+
 def get_series_count():
     sql = "SELECT COUNT(*) FROM series"
     return db.query(sql)[0][0]

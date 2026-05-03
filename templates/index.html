@@ -4,16 +4,23 @@
 
 {% block content %}
 
-
   {% if session.user_id %}
   <p>
     <a href="/add-series" class="btn">Add anime series</a>
   </p>
   {% endif %}
 
-
   {% for message in get_flashed_messages() %}
   <p class="flash">{{ message }}</p>
+  {% endfor %}
+
+  <h2>Newest anime series</h2>
+
+  {% for s in latest %}
+  <div class="card">
+    <a href="/series/{{ s.id }}">{{ s.title }}</a>
+    <span class="meta"> &middot; {{ s.year }}</span>
+  </div>
   {% endfor %}
 
 {% endblock %}

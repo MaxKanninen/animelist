@@ -28,7 +28,8 @@ def check_csrf():
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    latest = series.get_latest_series()
+    return render_template("index.html", latest=latest)
 
 @app.route("/registration", methods=["GET", "POST"])
 def registration():
